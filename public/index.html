@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScholarSync</title>
+    <meta name="description" content="AI-powered scholarship assistant that helps Indian students find scholarships, fellowships, and internships matched to their profile.">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/jpeg" href="favicon.jpg">
+    <link rel="apple-touch-icon" href="favicon.jpg">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <main class="chat-container">
+
+        <header class="header">
+            <span class="status-dot" role="status" aria-label="Bot is Online"></span>
+            <h1>ScholarSync</h1>
+        </header>
+
+        <section class="chat-box" id="chat-box" aria-live="polite" aria-relevant="additions">
+            </section>
+
+        <form class="input-area" id="chat-form" role="search" aria-label="Send a message">
+            <label for="user-input" class="sr-only">Type your message</label>
+
+            <input type="text" id="user-input" placeholder="Type..." autocomplete="off">
+
+            <button id="send-btn" type="submit" aria-label="Send message">
+                <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="white">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+            </button>
+        </form>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

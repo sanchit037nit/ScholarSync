@@ -1,0 +1,60 @@
+name: Weekly Scholarship Data Scrape
+
+on:
+  schedule:
+    # Runs every Monday at 00:00 UTC / 05:30 IST.
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekly-scholarship-scrape
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check required secrets
+        env:
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          if [ -z "$FIRECRAWL_API_KEY" ]; then
+            echo "::error::Missing FIRECRAWL_API_KEY. Add it in Settings > Secrets and variables > Actions > Repository secrets."
+            exit 1
+          fi
+
+          if [ -z "$GROQ_API_KEY" ]; then
+            echo "::warning::GROQ_API_KEY is not set. Scraper will use Tier 1 Native Next.js and Tier 3 Local Heuristic fallback."
+          fi
+
+      - name: Run scholarship scraper
+        env:
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GROQ_MODEL: ${{ secrets.GROQ_MODEL || vars.GROQ_MODEL || 'openai/gpt-oss-120b' }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: npm run scrape
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898752+github-actions[bot]@users.noreply.github.com"
+          git add data/scholarships.json
+          git diff --staged --quiet || (git commit -m "chore: update scholarships data (automated)" && git push)
